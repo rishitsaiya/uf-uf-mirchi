@@ -1,0 +1,21 @@
+{% extends 'homepage/index.html' %}
+
+{% block content %}
+	{% if messages %}
+		{% for message in messages %}
+			<div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				{{message}}
+			</div>
+			<br>
+		{% endfor %}
+	{% endif %}
+
+	<br>
+		<a href="{% url 'create-post' %}" class="btn btn-success"><i class="fa fa-pencil"></i> Create New Post</a> 
+	<br> <br> <br> <br>
+	{% for post in posts %}
+		<a href="{% url 'display-post' post.id %}" class="font-weight-bold" style="text-decoration: none; color: #0C0C0C;"><h4>{{ post.title }} <i class="fas fa-comment small float-right" aria-hidden="true"> {{ post.comment_set.count }}</i></h4></a> 
+		<hr>
+	{% endfor %}
+{% endblock content %}
