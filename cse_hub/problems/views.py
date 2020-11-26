@@ -11,6 +11,7 @@ from django.conf import settings
 from django.http import Http404, HttpResponse
 from .evaluate import evaluate
 from cse_hub.settings import CONTEST
+from .django.db import connection
 
 @login_required
 def submissions(request, username):
@@ -22,6 +23,10 @@ def submissions(request, username):
 		return redirect(reverse('home'))
 
 	codes = submitted_codes.objects.filter(author = user)
+
+	cursor = connection.cursor()
+	result = cursor.execute('SELECT * FROM AUTH_TABLE', object=Problem, author=user, id=1)
+	print('='*10, result, '='*10)
 
 	return render(request, 'problems/display_submissions.html', {'codes':codes})
 
