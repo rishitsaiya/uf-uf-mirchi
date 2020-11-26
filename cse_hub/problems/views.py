@@ -22,11 +22,9 @@ def submissions(request, username):
 		messages.error(request, 'Not allowed while contest !')
 		return redirect(reverse('home'))
 
-	codes = submitted_codes.objects.filter(author = user)
-
+	# codes = submitted_codes.objects.filter(author = user)
 	cursor = connection.cursor()
-	result = cursor.execute('SELECT * FROM AUTH_TABLE', object=Problem, author=user, id=1)
-	print('='*10, result, '='*10)
+	codes = cursor.execute('SELECT CODE from submitted_codes where author = ? LIMIT 1', author=user, object=submitted_codes)
 
 	return render(request, 'problems/display_submissions.html', {'codes':codes})
 
@@ -52,7 +50,9 @@ def display_submission(request, username, id):
 		messages.error(request, 'Not allowed while contest !')
 		return redirect(reverse('home'))
 
-	solution = submitted_codes.objects.get(id=id)
+	# solution = submitted_codes.objects.get(id=id)
+	cursor = connection.cursor()
+	solution = cursor.execute('SELECT CODE FROM submitted_codes where id = ? LIMIT 1', object=submitted_codes, id=id)
 	# file_path = os.path.join(settings.BASE_DIR,solution.submission_code.url)
 	file_path = settings.BASE_DIR + solution.submission_code.url
 	print(f'\nAccessing file: {file_path}\n')
@@ -129,10 +129,12 @@ def add_testcase(request):
 	return render(request, 'problems/add_testcase.html', {'form':TestCaseForm(user=request.user)})
 
 def problems(request):
+	cursor = connection.cursor()
 	if 'sortBy' in request.GET.keys() and request.GET['sortBy'] == 'total':
 		problems = Problem.objects.all().order_by('-total_submissions')
 	else:
-		problems = Problem.objects.all()
+		problems = cursor.execute('SELECT problems FROM problem', object=Problem)
+		# problems = Problem.objects.all()
 
 	# if request.method == 'GET':
 	# 	order = request.GET.get('order_by',False)
@@ -141,7 +143,9 @@ def problems(request):
 	return render(request, 'problems/display_problems.html', {'problems':problems})
 
 def display_problem(request, id):
-	cur_prob = Problem.objects.get(id=id)
+	# cur_prob = Problem.objects.get(id=id)
+	cursor = connection.cursor()
+	cur_prob = cursor.execute('SELECT problems FROM problem WHERE id=? LIMIT 1', object=Problem, id=id)
 	return render(request, 'problems/display_a_problem.html', {'problem':cur_prob})
 
 @login_required

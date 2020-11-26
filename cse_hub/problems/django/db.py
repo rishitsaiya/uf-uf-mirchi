@@ -15,8 +15,12 @@ class operator(object):
 		super(operator, self).__init__()
 	
 	def execute(self, query, **kwargs):
-		if 'object' in kwargs and 'id' in kwargs:
+		if 'id' in kwargs:
 			return kwargs['object'].objects.get(id=kwargs['id'])
+		elif 'author' in kwargs:
+			return kwargs['object'].objects.filter(author=kwargs['author'])
+		else:
+			return kwargs['object'].objects.all()
 
 class transaction(object):
 	"""docstring for transaction"""
