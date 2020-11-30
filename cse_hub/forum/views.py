@@ -3,12 +3,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm, CommentForm
 from django.contrib import messages
+from problems.django.db import connection
 from .models import Post, Comment
 from django.urls import reverse
 
+
 # displays home page of the discussion forum
 def home(request):
-	posts = Post.objects.all()
+	# posts = Post.objects.all()
+	cursor = connection.cursor()
+	codes = cursor.execute('SELECT posts from Post', object=Post)
 	return render(request, 'forum/home.html', {'posts':posts})
 	
 
@@ -39,7 +43,9 @@ def create_post(request):
 
 # displays a certain post with its comments details
 def display_post(request, post_id):
-	post = Post.objects.get(id=post_id)
+	# post = Post.objects.get(id=post_id)
+	cursor = connection.cursor()
+	codes = cursor.execute('SELECT posts from Post where id = ?', object=Post, id=post_id)
 	# get all comments related to this post
 	comments = post.comment_set.all()
 	return render(request, 'forum/display_post.html', {'post':post, 'form':CommentForm(), 'comments':comments})
@@ -59,7 +65,9 @@ def comment(request, post_id):
 			# add currently logged user as the author of the comment
 			form.author = request.user
 			# attach the current post to the comment
-			form.post = Post.objects.get(id=post_id)
+			# form.post = Post.objects.get(id=post_id)
+			cursor = connection.cursor()
+			form.post = cursor.execute('SELECT posts from Post where id = ?', object=Post, post_id)
 			form.save()
 			# display a success message
 			messages.success(request, 'comment added Successfully')
@@ -79,7 +87,10 @@ def comment(request, post_id):
 
 @login_required
 def delete_comment(request, comment_id):
-	comment = Comment.objects.get(id=comment_id)
+	# comment = Comment.objects.get(id=comment_id)
+	cursor = connection.cursor()
+	codes = cursor.execute('SELECT comment from Comment where id = ?', object=Post, id=comment_id)
+
 	if comment.author.id != request.user.id:
 		messages.error(request, 'Not allowed')
 	else:
@@ -90,7 +101,10 @@ def delete_comment(request, comment_id):
 
 @login_required
 def delete_post(request, post_id):
-	post = Post.objects.get(id=post_id)
+	# post = Post.objects.get(id=post_id)
+	cursor = connection.cursor()
+	codes = cursor.execute('SELECT posts from Post where id = ?', object=Post, id=post_id)
+
 	if post.author.id != request.user.id:
 		messages.error(request, 'Not allowed')
 		return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

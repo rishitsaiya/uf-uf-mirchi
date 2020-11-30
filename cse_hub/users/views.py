@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .forms import ProfileUpdateForm
+from problems.django.db import connection
 from django.contrib import messages
 from django.conf import settings
 from .models import Profile
