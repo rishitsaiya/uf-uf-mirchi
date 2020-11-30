@@ -12,7 +12,7 @@ from django.urls import reverse
 def home(request):
 	# posts = Post.objects.all()
 	cursor = connection.cursor()
-	codes = cursor.execute('SELECT posts from Post', object=Post)
+	posts = cursor.execute('SELECT posts from Post', object=Post)
 	return render(request, 'forum/home.html', {'posts':posts})
 	
 
@@ -25,7 +25,8 @@ def create_post(request):
 		if form.is_valid():
 			form = form.save(commit=False)
 			form.author = request.user
-			form.save()
+			cursor = connection.cursor()
+			codes = cursor.excute('insert into Form', object=form)
 			messages.success(request, 'Created Post Successfully')
 			return redirect(home)
 		else:
@@ -45,7 +46,7 @@ def create_post(request):
 def display_post(request, post_id):
 	# post = Post.objects.get(id=post_id)
 	cursor = connection.cursor()
-	codes = cursor.execute('SELECT posts from Post where id = ?', object=Post, id=post_id)
+	post = cursor.execute('SELECT posts from Post where id = ?', object=Post, id=post_id)
 	# get all comments related to this post
 	comments = post.comment_set.all()
 	return render(request, 'forum/display_post.html', {'post':post, 'form':CommentForm(), 'comments':comments})
@@ -67,8 +68,9 @@ def comment(request, post_id):
 			# attach the current post to the comment
 			# form.post = Post.objects.get(id=post_id)
 			cursor = connection.cursor()
-			form.post = cursor.execute('SELECT posts from Post where id = ?', object=Post, post_id)
-			form.save()
+			form.post = cursor.execute('SELECT posts from Post where id = ?', object=Post, id=post_id)
+			cursor = connection.cursor()
+			codes = cursor.excute('insert into Form', object=form)
 			# display a success message
 			messages.success(request, 'comment added Successfully')
 		else:
@@ -89,7 +91,7 @@ def comment(request, post_id):
 def delete_comment(request, comment_id):
 	# comment = Comment.objects.get(id=comment_id)
 	cursor = connection.cursor()
-	codes = cursor.execute('SELECT comment from Comment where id = ?', object=Post, id=comment_id)
+	comment = cursor.execute('SELECT comment from Comment where id = ?', object=Post, id=comment_id)
 
 	if comment.author.id != request.user.id:
 		messages.error(request, 'Not allowed')
@@ -103,7 +105,7 @@ def delete_comment(request, comment_id):
 def delete_post(request, post_id):
 	# post = Post.objects.get(id=post_id)
 	cursor = connection.cursor()
-	codes = cursor.execute('SELECT posts from Post where id = ?', object=Post, id=post_id)
+	post = cursor.execute('SELECT posts from Post where id = ?', object=Post, id=post_id)
 
 	if post.author.id != request.user.id:
 		messages.error(request, 'Not allowed')

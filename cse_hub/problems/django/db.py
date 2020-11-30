@@ -22,6 +22,9 @@ class operator(object):
 		else:
 			return kwargs['object'].objects.all()
 
+	def excute(self, query, **kwargs):
+		kwargs['object'].save()
+
 class transaction(object):
 	"""docstring for transaction"""
 	def __init__(self):
