@@ -3,12 +3,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm, CommentForm
 from django.contrib import messages
+from problems.django.db import connection
 from .models import Post, Comment
 from django.urls import reverse
 
+
 # displays home page of the discussion forum
 def home(request):
-	posts = Post.objects.all()
+	# posts = Post.objects.all()
+	cursor = connection.cursor()
+	posts = cursor.execute('SELECT * from forum_post', object=Post)
 	return render(request, 'forum/home.html', {'posts':posts})
 	
 
@@ -21,7 +25,8 @@ def create_post(request):
 		if form.is_valid():
 			form = form.save(commit=False)
 			form.author = request.user
-			form.save()
+			cursor = connection.cursor()
+			codes = cursor.excute('insert into forum_post', object=form)
 			messages.success(request, 'Created Post Successfully')
 			return redirect(home)
 		else:
@@ -39,7 +44,9 @@ def create_post(request):
 
 # displays a certain post with its comments details
 def display_post(request, post_id):
-	post = Post.objects.get(id=post_id)
+	# post = Post.objects.get(id=post_id)
+	cursor = connection.cursor()
+	post = cursor.execute('SELECT * from forum_post where id = ?', object=Post, id=post_id)
 	# get all comments related to this post
 	comments = post.comment_set.all()
 	return render(request, 'forum/display_post.html', {'post':post, 'form':CommentForm(), 'comments':comments})
@@ -59,8 +66,11 @@ def comment(request, post_id):
 			# add currently logged user as the author of the comment
 			form.author = request.user
 			# attach the current post to the comment
-			form.post = Post.objects.get(id=post_id)
-			form.save()
+			# form.post = Post.objects.get(id=post_id)
+			cursor = connection.cursor()
+			form.post = cursor.execute('SELECT * from forum_comment where id = ?', object=Post, id=post_id)
+			cursor = connection.cursor()
+			cursor.excute('INSERT INTO forum_comment VALUES = ?', object=form)
 			# display a success message
 			messages.success(request, 'comment added Successfully')
 		else:
@@ -79,7 +89,10 @@ def comment(request, post_id):
 
 @login_required
 def delete_comment(request, comment_id):
-	comment = Comment.objects.get(id=comment_id)
+	# comment = Comment.objects.get(id=comment_id)
+	cursor = connection.cursor()
+	comment = cursor.execute('SELECT * from forum_comment where id = ?', object=Comment, id=comment_id)
+
 	if comment.author.id != request.user.id:
 		messages.error(request, 'Not allowed')
 	else:
@@ -90,7 +103,10 @@ def delete_comment(request, comment_id):
 
 @login_required
 def delete_post(request, post_id):
-	post = Post.objects.get(id=post_id)
+	# post = Post.objects.get(id=post_id)
+	cursor = connection.cursor()
+	post = cursor.execute('SELECT * from forum_post where id = ?', object=Post, id=post_id)
+
 	if post.author.id != request.user.id:
 		messages.error(request, 'Not allowed')
 		return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

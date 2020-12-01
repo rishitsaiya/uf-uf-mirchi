@@ -11,6 +11,7 @@ from django.conf import settings
 from django.http import Http404, HttpResponse
 from .evaluate import evaluate
 from cse_hub.settings import CONTEST
+from .django.db import connection
 
 @login_required
 def submissions(request, username):
@@ -21,7 +22,9 @@ def submissions(request, username):
 		messages.error(request, 'Not allowed while contest !')
 		return redirect(reverse('home'))
 
-	codes = submitted_codes.objects.filter(author = user)
+	# codes = submitted_codes.objects.filter(author = user)
+	cursor = connection.cursor()
+	codes = cursor.execute('SELECT * from problems_submissions where author = ? LIMIT 1', author=user, object=submitted_codes)
 
 	return render(request, 'problems/display_submissions.html', {'codes':codes})
 
@@ -47,7 +50,9 @@ def display_submission(request, username, id):
 		messages.error(request, 'Not allowed while contest !')
 		return redirect(reverse('home'))
 
-	solution = submitted_codes.objects.get(id=id)
+	# solution = submitted_codes.objects.get(id=id)
+	cursor = connection.cursor()
+	solution = cursor.execute('SELECT * FROM problems_submissions where id = ? LIMIT 1', object=submitted_codes, id=id)
 	# file_path = os.path.join(settings.BASE_DIR,solution.submission_code.url)
 	file_path = settings.BASE_DIR + solution.submission_code.url
 	print(f'\nAccessing file: {file_path}\n')
@@ -76,8 +81,12 @@ def submit(request, id):
 			# create and instance of form but don't save it
 			form = form.save(commit=False)
 			form.author = request.user
-			form.problem_code = Problem.objects.get(id=id)
-			form.save()
+			# form.problem_code = Problem.objects.get(id=id)
+			cursor = connection.cursor()
+			form.problem_code = cursor.execute('SELECT * FROM problems_problem as p, problems_problem_tags as t where p.id = t.id AND p.id = ?', object=Problem, id=id)
+			# form.save()
+			cursor = connection.cursor()
+			codes = cursor.excute('INSERT Into problems_problem values=?', object=form)
 
 			cur_user = request.user
 			cur_user.profile.problems_tried += 1
@@ -85,10 +94,14 @@ def submit(request, id):
 			cur_prob.total_submissions += 1
 
 			verdict = evaluate(form.submission_code, id)
-			current_submitted_code = submitted_codes.objects.get(id=form.id)
+			# current_submitted_code = submitted_codes.objects.get(id=form.id)
+			cursor = connection.cursor()
+			current_submitted_code = cursor.execute('SELECT * FROM problems_submissions where id = ?', object=submitted_codes, id=form.id)
 
 			current_submitted_code.verdict = verdict
-			current_submitted_code.save()
+			# current_submitted_code.save()
+			cursor = connection.cursor()
+			cursor.excute('INSERT INTO problems_submissions values = ?', object=current_submitted_code)
 			
 			if verdict == 'AC':
 				cur_user.profile.problems_solved += 1
@@ -98,7 +111,9 @@ def submit(request, id):
 			elif verdict == 'WA':
 				cur_user.profile.problems_WA += 1
 
-			cur_prob.save()
+			# cur_prob.save()
+			cursor = connection.cursor()
+			cursor.excute('INSERT INTO users_profile values = ?', object=cur_prob)
 			cur_user.profile.save()
 			# print(request.user, '=======================',cur_user.profile.problems_tried)
 			# update all fields of question and user submissions
@@ -112,7 +127,9 @@ def add_testcase(request):
 	if request.method == 'POST':
 		form = TestCaseForm(request.POST, request.FILES, user=request.user)
 		if form.is_valid():
-			form.save()
+			# form.save()
+			cursor = connection.cursor()
+			cursor.excute('INSERT INTO problems_testcase values = ?', object=form)
 			messages.success(request, 'Added testcase')
 		else:
 			print(form.errors)
@@ -124,10 +141,12 @@ def add_testcase(request):
 	return render(request, 'problems/add_testcase.html', {'form':TestCaseForm(user=request.user)})
 
 def problems(request):
+	cursor = connection.cursor()
 	if 'sortBy' in request.GET.keys() and request.GET['sortBy'] == 'total':
 		problems = Problem.objects.all().order_by('-total_submissions')
 	else:
-		problems = Problem.objects.all()
+		problems = cursor.execute('SELECT * FROM problems_problem, problems_problem_tags WHERE problems_problem.id = problems_problem_tags.id', object=Problem)
+		# problems = Problem.objects.all()
 
 	# if request.method == 'GET':
 	# 	order = request.GET.get('order_by',False)
@@ -136,7 +155,9 @@ def problems(request):
 	return render(request, 'problems/display_problems.html', {'problems':problems})
 
 def display_problem(request, id):
-	cur_prob = Problem.objects.get(id=id)
+	# cur_prob = Problem.objects.get(id=id)
+	cursor = connection.cursor()
+	cur_prob = cursor.execute('SELECT * FROM problems_problem WHERE id=? LIMIT 1', object=Problem, id=id)
 	return render(request, 'problems/display_a_problem.html', {'problem':cur_prob})
 
 @login_required
@@ -149,7 +170,9 @@ def add_problem(request):
 		if form.is_valid():
 			new_problem = form.save(commit=False)
 			new_problem.author = request.user
-			new_problem.save()
+			# new_problem.save()
+			cursor = connection.cursor()
+			cursor.excute('INSERT INTO problems_problem values = ?', object=new_problem)
 
 			# https://stackoverflow.com/a/38495003/10127204
 			form.save_m2m()
