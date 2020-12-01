@@ -18,7 +18,7 @@ def profile(request, username):
 	try:
 		# requested_user = User.objects.get(username=username)
 		cursor = connection.cursor()
-		requested_user = cursor.excute('SELECT USER FROM users where username = ?', object=form, username=username)
+		requested_user = cursor.execute('SELECT * FROM auth_user, users_profile where auth_user.id = users_profile.id AND auth_user.username = ?', object=User, username=username)
 		image_url = requested_user.profile.profile_pic
 		context = {'user': requested_user, 'pic': image_url}
 
@@ -35,7 +35,7 @@ def profile_edit(request, username):
 		
 	# profile = Profile.objects.get(user=request.user)
 	cursor = connection.cursor()
-	profile = cursor.excute('SELECT Profile FROM Profiles where user = ?', object=Profile, user=request.user)
+	profile = cursor.execute('SELECT * FROM users_profile where id = ?', object=Profile, user=request.user)
 	# ===========Implement the followint logic ==================
 	if request.method == 'POST':
 		form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
@@ -43,7 +43,7 @@ def profile_edit(request, username):
 			profile = form.save(commit=False)
 			# profile.save()
 			cursor = connection.cursor()
-			cursor.excute('INSERT INTO profile VALUES = ?', object=profile)
+			cursor.excute('INSERT INTO users_profile VALUES = ?', object=profile)
 
 			messages.success(request, 'Succefully Updated')
 		else:
