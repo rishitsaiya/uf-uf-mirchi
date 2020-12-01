@@ -62,16 +62,29 @@ use ```python3 manage.py createsuperuser``` to create admin credentials and then
 ###### Make sure you create tags before adding questions.
 
 ##### Screenshots :
-![Screenshot from 2020-04-10 19-44-16](https://user-images.githubusercontent.com/46635452/78997198-b2cd5000-7b63-11ea-9a2a-6942958f3ed8.png)
+![Forum](https://user-images.githubusercontent.com/46641953/100749908-55945080-340b-11eb-84f2-68c977b31520.png)
 
-![Screenshot from 2020-04-10 19-44-48](https://user-images.githubusercontent.com/46635452/78997236-ca0c3d80-7b63-11ea-835d-ecfcd8d53fd5.png)
+![Forum_post](https://user-images.githubusercontent.com/46641953/100749912-56c57d80-340b-11eb-8b0d-5ab0ac3056cd.png)
 
-![Screenshot from 2020-04-10 19-42-10](https://user-images.githubusercontent.com/46635452/78996997-6bdf5a80-7b63-11ea-972f-25a303eeaf90.png)
+![Login_page](https://user-images.githubusercontent.com/46641953/100749917-575e1400-340b-11eb-9893-f0b4da11413f.png)
 
-![Screenshot from 2020-04-10 19-35-00](https://user-images.githubusercontent.com/46635452/78996675-b3b1b200-7b62-11ea-8032-68bd97240ef6.png)
+![problem](https://user-images.githubusercontent.com/46641953/100749920-57f6aa80-340b-11eb-8c17-051d65b5ab8f.png)
 
-![Screenshot from 2020-04-04 00-58-37](https://user-images.githubusercontent.com/46635452/78400079-ae5ce080-7613-11ea-8394-f35e26adb7b1.png)
+![Profile](https://user-images.githubusercontent.com/46641953/100749925-588f4100-340b-11eb-9d76-d6943d726098.png)
 
+![Signup_page](https://user-images.githubusercontent.com/46641953/100749935-5b8a3180-340b-11eb-8807-b3ab749906ba.png)
+
+![submission](https://user-images.githubusercontent.com/46641953/100749937-5c22c800-340b-11eb-976b-1b25b0394935.png)
+
+![Add_Problem](https://user-images.githubusercontent.com/46641953/100749939-5cbb5e80-340b-11eb-9672-db40193372bb.png)
+
+![Add_testcase](https://user-images.githubusercontent.com/46641953/100749941-5d53f500-340b-11eb-8897-c70806c9559d.png)
+
+![All_Problems](https://user-images.githubusercontent.com/46641953/100749944-5dec8b80-340b-11eb-845c-d41141d42b3d.png)
+
+![Create_forum_post](https://user-images.githubusercontent.com/46641953/100749948-5e852200-340b-11eb-8766-9c9575a5fe00.png)
+
+![Editor](https://user-images.githubusercontent.com/46641953/100749955-5f1db880-340b-11eb-9c8e-e2da26eba36e.png)
 
 #### Further Reading :
 * [Writing tests](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Testing)

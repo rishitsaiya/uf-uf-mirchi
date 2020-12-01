@@ -7,7 +7,7 @@
 	{% if title %}
 		<title>{{title}}</title>
 	{% else %}
-		<title>CSE-HUB</title>
+		<title>CodeShinobi</title>
 	{% endif %}
 </head>
 <body style=" overflow-x: hidden; padding-bottom: 120px;">
@@ -78,11 +78,13 @@
 		    	<li class="nav-item">
 		        <!-- <a class="nav-link disabled" href="#">Disabled</a> -->
 		    	</li>
-		    </ul>
-		    <form class="form-inline my-2 my-lg-0">
+			</ul>
+			{% load static %}
+			<a href="{% url 'home' %}"><img height="60px" width="180px" alt="logo" src="{% static 'homepage/up.gif' %}" style="position:relative;top:-10px"></a>
+		    <!-- <form class="form-inline my-2 my-lg-0">
 		    	<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
 		    	<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-		    </form>
+		    </form> -->
 		</div>
 	</nav>
 
@@ -99,7 +101,7 @@
 		<div class="row">
 			<footer id="sticky-footer" class="py-4 bg-dark text-white-50" style="bottom: 0; position: fixed; width: 100%; color: #e05ea0;">
 		    	<div class="container text-center">
-		    		<small>Copyright &copy; Your Website</small>
+		    		<small>Copyright &copy; CodeShinobi</small>
 		    	</div>
 			</footer>
 		</div>
