@@ -19,6 +19,10 @@ class operator(object):
 			return kwargs['object'].objects.get(id=kwargs['id'])
 		elif 'author' in kwargs:
 			return kwargs['object'].objects.filter(author=kwargs['author'])
+		elif 'username' in kwargs:
+			return kwargs['object'].objects.get(username=kwargs['username'])
+		elif 'user' in kwargs:
+			return kwargs['object'].objects.get(user=kwargs['user'])
 		else:
 			return kwargs['object'].objects.all()
 

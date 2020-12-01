@@ -70,7 +70,7 @@ def comment(request, post_id):
 			cursor = connection.cursor()
 			form.post = cursor.execute('SELECT posts from Post where id = ?', object=Post, id=post_id)
 			cursor = connection.cursor()
-			codes = cursor.excute('insert into Form', object=form)
+			cursor.excute('INSERT INTO Form VALUES = ?', object=form)
 			# display a success message
 			messages.success(request, 'comment added Successfully')
 		else:
