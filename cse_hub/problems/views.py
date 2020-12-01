@@ -15,7 +15,9 @@ from .django.db import connection
 
 @login_required
 def submissions(request, username):
-	user = User.objects.get(username = username)
+	# user = User.objects.get(username = username)
+	cursor = connection.cursor()
+	user = cursor.execute('SELECT * FROM auth_user, users_profile where auth_user.id = users_profile.id AND auth_user.username = ?', object=User, username=username)
 
 	# if user is trying to access other's solutions while contest
 	if CONTEST and username != request.user.username:
